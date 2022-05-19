@@ -3,8 +3,18 @@
 let todoItems = [];
 
 function renderTodo(todo){
+    // seteamos en el localStorage
+    localStorage.setItem("todoItems", JSON.stringify(todoItems));
+
     // seleccion del primer elemento con la clase js-todo-list
     const list = document.querySelector(".js-todo-list");
+
+    const item = document.querySelector(`[data-key='${todo.id}']`);
+
+    if (todo.deleted) {
+        item.remove();
+        return
+      }
 
     // operador ternario para ver si la tarea, está chequeada
     // si es true, le asignas el valor done a isChecked, de otra forma, string vacio
@@ -30,9 +40,14 @@ function renderTodo(todo){
     `;
 
     // agregamos el elemento al ultimo agregado
-    list.append(node);
+    if (item) {
+        list.replaceChild(node, item);
+      } else {
+        list.append(node);
+      }
+    }
 
-}
+
 
 
 // funcion para crear un objeto y pushearlo dentro del array de la lista
@@ -46,6 +61,24 @@ function addTodo(text) {
   todoItems.push(todo);
   renderTodo(todo);
 }
+
+function toggleDone(key) {
+    const index = todoItems.findIndex(item => item.id === Number(key));
+    todoItems[index].checked = !todoItems[index].checked;
+    renderTodo(todoItems[index]);
+  }
+
+
+
+  function deleteTodo(key) {
+    const index = todoItems.findIndex(item => item.id === Number(key));
+    const todo = {
+      deleted: true,
+      ...todoItems[index]
+    };
+    todoItems = todoItems.filter(item => item.id !== Number(key));
+    renderTodo(todo);
+  }
 
 
 const form = document.querySelector('.js-form');
@@ -66,3 +99,26 @@ form.addEventListener('submit', event => {
 });
 
 
+const list = document.querySelector(".js-todo-list");
+list.addEventListener('click', event => {
+  if (event.target.classList.contains('js-tick')) {
+    const itemKey = event.target.parentElement.dataset.key;
+    toggleDone(itemKey);
+  }
+  
+  if (event.target.classList.contains('js-delete-todo')) {
+    const itemKey = event.target.parentElement.dataset.key;
+    deleteTodo(itemKey);
+  }
+});
+
+// cuando carga la pagina, obtenemos el valor que hay en el localStorage de "todoItemsRef", y lo asignamos a REF. Si existe, convertimos el string JSON de vuelta al array original y lo alojamos en todoItems.
+document.addEventListener('DOMContentLoaded', () => {
+    const ref = localStorage.getItem('todoItems');
+    if (ref) {
+      todoItems = JSON.parse(ref);
+      todoItems.forEach(t => {
+        renderTodo(t);
+      });
+    }
+  });
