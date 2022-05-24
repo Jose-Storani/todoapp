@@ -24,11 +24,12 @@ html {
     height: 90vh;
     margin-top: 5vh;
     margin-bottom: 5vh;
+    background-color: bisque;
     overflow-y: auto;
     border: rgb(170, 99, 99) dashed 2px;
   }
   
-  .app-title {
+  .titulo {
     text-align: center;
     margin-bottom: 20px;
     font-size: 50px;
@@ -36,7 +37,7 @@ html {
   }
   
   
-  .todo-list {
+  .listaTareas {
     list-style: none;
     margin-bottom: 20px;
   }
